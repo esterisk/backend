@@ -1,0 +1,19 @@
+{
+    "name": "esterisk/backend",
+    "description": "Backend creation and validation.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Silvio Sosio",
+            "email": "silvio@sosio.it"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload" : {
+        "psr-4": {
+            "Esterisk\\Backend\\": "src/"
+        }
+    },
+    "require": {}
+}
