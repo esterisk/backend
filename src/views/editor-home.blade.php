@@ -1,4 +1,4 @@
-@extends($resource->viewLayout)
+@extends($editor->viewLayout)
 
 @section('content')
 <div class="list-tools row">
@@ -14,8 +14,8 @@
 				<select class="custom-select mr-sm-2" name="searchIn">
 					<option value="">Tutti i campi</option>
 					<option value="id"{{ $tools['searchIn']=='id' ? ' selected' : '' }}>ID</option>
-					@foreach($resource->listFields as $key)
-					<option value="{{ $key }}"{{ $tools['searchIn']==$key ? ' selected' : '' }}>{{ $resource->fieldLabel($key) }}</option>
+					@foreach($editor->listFields as $key)
+					<option value="{{ $key }}"{{ $tools['searchIn']==$key ? ' selected' : '' }}>{{ $editor->fieldLabel($key) }}</option>
 					@endforeach
 				</select>
 			</div>
@@ -23,7 +23,7 @@
 		</form>
 	</div>
 
-	@if (!empty($resource->selections))
+	@if (!empty($editor->selections))
 	<div class="col-sm">
 		<form method="get">
 		<div class="input-group">
@@ -32,7 +32,7 @@
 			</div>
 			<select class="custom-select" name="selection" onchange="this.form.submit()">
 				<option value="">{{ !empty($tools['selection']) ? 'Tutti' : 'Seleziona solo…' }}</option>
-				@foreach($resource->selections as $key => $selection)
+				@foreach($editor->selections as $key => $selection)
 				<option value="{{ $key }}"{{ $tools['selection']==$key ? ' selected' : '' }}>{{ $selection['label'] }}</option>
 				@endforeach
 			</select>
@@ -49,7 +49,7 @@
 	<span class="list-filter">
 		<acronym class="filter-icon {{ $filter['icon'] }}" title="{{ $filter['label'] }}"></acronym>
 		{{ $filter['description'] }} 
-		<a href="{{ $resource->listRoute([ '-'.$filter['key'] => $filter['value'] ]) }}" class="close">&times;</a>
+		<a href="{{ $editor->listRoute([ '-'.$filter['key'] => $filter['value'] ]) }}" class="close">&times;</a>
 		</span>
 @endforeach
 </div></div>
@@ -57,13 +57,13 @@
 
 <div class="list-stats row">
 	<div class="col-sm-4 ">
-		@include('esterisk.backend.command-menu', [ 'cmdmenus' => $resource->resourceCommandMenu() ])
+		@include('esterisk.backend.command-menu', [ 'cmdmenus' => $editor->editorCommandMenu() ])
 	</div>
 	<div class="col-sm-6 "><p style="line-height:37px">
 		@if ($total == 0)
-		Ancora nessun {{ $resource->singular() }}.
+		Ancora nessun {{ $editor->singular() }}.
 		@else
-		<b>{{ $found }}</b> {{ $resource->plural() }} trovati su {{ $total }} totali ({{ round($found/$total*100, 2) }}%) - Mostrati da {{ $first }} a {{ $last }}
+		<b>{{ $found }}</b> {{ $editor->plural() }} trovati su {{ $total }} totali ({{ round($found/$total*100, 2) }}%) - Mostrati da {{ $first }} a {{ $last }}
 		@endif
 	</p></div>
 	<div class="col-sm-2">
@@ -196,7 +196,7 @@ window.addEventListener("keypress", shiftHandler, false);
 window.addEventListener("keyup", shiftHandler, false);
 </script>
 
-@foreach($resource->scriptLibs as $lib)
+@foreach($editor->scriptLibs as $lib)
 <script src="{{ $lib }}"></script>
 @endforeach
 @endsection

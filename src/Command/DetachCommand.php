@@ -13,13 +13,13 @@ class DetachCommand extends Command
 	public function execute($id = null, Request $request)
 	{
 		if ($this->detachModel($id)) {
-		    return $this->success(ucfirst($this->resource->singular()).' '.$id.' rimosso', [ 
+		    return $this->success(ucfirst($this->editor->singular()).' '.$id.' rimosso', [ 
 		    	'_id' => $id, 
-		    	'resource' => $this->resource->slug, 
+		    	'editor' => $this->editor->slug, 
 	         	'event' => $this->detachedEvent($id),
 		    ]);
 		} else {
-		    return $this->error(ucfirst($this->resource->singular()).' '.$id.' non trovato');
+		    return $this->error(ucfirst($this->editor->singular()).' '.$id.' non trovato');
 		}
 	}
 		
@@ -27,7 +27,7 @@ class DetachCommand extends Command
 	
 	public function detachModel($id)
 	{
-//		$this->resource->record->delete();
+//		$this->editor->record->delete();
 		return true;
 	}
 

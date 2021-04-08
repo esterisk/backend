@@ -13,7 +13,7 @@ class ListCommand extends Command
 
 	public function execute($id = null, Request $request)
 	{
-		if (!$id) return $this->resource->listCompiler()->resourceHome($request);
-		else return $this->resource->listCompiler()->row($id, $request->list);
+		if (!$id) return $this->editor->listCompiler()->editorHome($request);
+		else return $this->editor->listCompiler()->row($id, $request->list);
 	}
 }

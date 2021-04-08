@@ -10,9 +10,9 @@
       <th class="text-right">
 		ID
       </th>
-@foreach($resource->relatedListFields as $key)
-      <th class="{{ $resource->fieldShowAlign($key) == 'right' ? 'text-right' : '' }}">
-		{{ $resource->fieldLabel($key) }}
+@foreach($editor->relatedListFields as $key)
+      <th class="{{ $editor->fieldShowAlign($key) == 'right' ? 'text-right' : '' }}">
+		{{ $editor->fieldLabel($key) }}
 @endforeach
       <th class="text-right">Comandi</th>
     </tr>

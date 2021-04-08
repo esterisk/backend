@@ -51,12 +51,12 @@ class Backend
 		$this->sections[] = [ 'name' => $section, 'priority' => $priority ];
 	}
 
-	public function register($slug, $resourceClass, $name, $section = null, $priority = null)
+	public function register($slug, $editorClass, $name, $section = null, $priority = null)
 	{
-		$this->resources[$slug] = [
-			'class' => $resourceClass, 
+		$this->editors[$slug] = [
+			'class' => $editorClass, 
 			'name' => $name,
-			'route' => $this->resourceRoute($slug), 
+			'route' => $this->editorRoute($slug), 
 			'section' => $section ?: '', 
 			'priority' => $priority ?: '99' 
 		];
@@ -64,75 +64,75 @@ class Backend
 	
 	/* Create routes */
 	
-	public function route($kind, $resource, $cmd = null, $id = null, $addToSession = [])
+	public function route($kind, $editor, $cmd = null, $id = null, $addToSession = [])
 	{
 		if ($addToSession == null) $addToSession = [];
 		return route('esterisk.backend.'.strtolower($kind), 
-			array_merge([ 'backend' => $this->prefix, 'resource' => $resource, 'cmd' => $cmd, 'id' => $id ], $addToSession));
+			array_merge([ 'backend' => $this->prefix, 'editor' => $editor, 'cmd' => $cmd, 'id' => $id ], $addToSession));
 	}
 	
-	public function resourceRoute($resource, $addToSession = [])
+	public function editorRoute($editor, $addToSession = [])
 	{
-		return $this->route('get', $resource, null, null, $addToSession);
+		return $this->route('get', $editor, null, null, $addToSession);
 	}
 	
-	public function getRoute($resource, $cmd = null, $id = null)
+	public function getRoute($editor, $cmd = null, $id = null)
 	{
-		return $this->route('get', $resource, $cmd, $id);
+		return $this->route('get', $editor, $cmd, $id);
 	}
 	
-	public function postRoute($resource, $cmd = null, $id = null)
+	public function postRoute($editor, $cmd = null, $id = null)
 	{
-		return $this->route('post', $resource, $cmd, $id);
+		return $this->route('post', $editor, $cmd, $id);
 	}
 	
-	public function ajaxRoute($resource, $cmd = null, $id = null)
+	public function ajaxRoute($editor, $cmd = null, $id = null)
 	{
-		return $this->route('ajax', $resource, $cmd, $id);
+		return $this->route('ajax', $editor, $cmd, $id);
 	}
 	
-	public function reloadRoute($resource)
+	public function reloadRoute($editor)
 	{
 		return route('esterisk.backend.reload', 
-			[ 'backend' => $this->prefix, 'resource' => $resource ]);
+			[ 'backend' => $this->prefix, 'editor' => $editor ]);
 	}
 	
-	public function lookupRoute($resource, $field)
+	public function lookupRoute($editor, $field)
 	{
 		return route('esterisk.backend.lookup', 
-			[ 'backend' => $this->prefix, 'resource' => $resource, 'field' => $field ]);
+			[ 'backend' => $this->prefix, 'editor' => $editor, 'field' => $field ]);
 	}
 	
 	/* Execute commands */
 	
-	public function execute($resource, $command, $id, $request)
+	public function execute($editor, $command, $id, $request)
 	{
-		return $this->resource($resource)->execute($command, $id, $request);
+		return $this->editor($editor)->execute($command, $id, $request);
 	}
 	
-	public function resource($resource)
+	public function editor($editor)
 	{
-		if (empty($this->resources[$resource])) throw new \Exception('Backend resource not found');
-		$class = $this->resources[$resource]['class'];
-		return new $class($this, $resource);
+		if (empty($this->editors[$editor])) throw new \Exception('Backend editor not found');
+		$class = $this->editors[$editor]['class'];
+		return new $class($this, $editor);
 	}
 	
 	/* Execute lookup */
 	
-	public function lookup($resource, $field, $request)
+	public function lookup($editor, $field, $request)
 	{
-		return $this->resource($resource)->lookup($field, $request);
+		return $this->editor($editor)->lookup($field, $request);
 	}
 	
 	/* Execute reload */
 	
-	public function reload($resource, $request)
+	public function reload($editor, $request)
 	{
-		return $this->resource($resource)->reload($request);
+		return $this->editor($editor)->reload($request);
 	}
 	
 	
-	private function sortResources(&$array)
+	private function sortEditors(&$array)
 	{
 		usort($array, function($a, $b) {
 			if ($a['section'] != $b['section']) {
@@ -148,14 +148,14 @@ class Backend
 	
 	
 	
-	public function resourcesMenu()
+	public function editorsMenu()
 	{
-		$this->sortResources($this->resources);
+		$this->sortEditors($this->editors);
 		
 		/* qui inserire verifica ruolo e accessibilità */
 		$sections = [];
-		foreach ($this->resources as $resource) {
-			$sections[$resource['section']][] = $resource;
+		foreach ($this->editors as $editor) {
+			$sections[$editor['section']][] = $editor;
 		}
 		
 		return $sections;

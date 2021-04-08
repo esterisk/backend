@@ -2,15 +2,15 @@
 namespace Esterisk\Backend\ListCompiler;
 use Illuminate\Http\Request;
 
-class ResourceListCompiler
+class EditorListCompiler
 {
-	var $resource;
+	var $editor;
 	var $templateBase = 'esterisk/backend';
 	var $info = null;
 
-	public function __construct($resource, $model)
+	public function __construct($editor, $model)
 	{
-		$this->resource = $resource;
+		$this->editor = $editor;
 		$this->model = $model;
 		$this->init();
 	}
@@ -21,16 +21,16 @@ class ResourceListCompiler
 	{
 		$listing  = isset($request->listing) ? $request->listing : 'home';
 		$id = isset($request->id) ? $request->id : null;
-		$relationResource = isset($request->relationResource) ? $request->relationResource : null;
+		$relationEditor = isset($request->relationEditor) ? $request->relationEditor : null;
 		$relationField = isset($request->relationField) ? $request->relationField : null;
 		$relationId = isset($request->relationId) ? $request->relationId : null;
 
-		return $this->row($listing, $id, $relationResource, $relationField, $relationId);
+		return $this->row($listing, $id, $relationEditor, $relationField, $relationId);
 	}
 	
-	public function row($listing, $id, $relationResource, $relationField, $relationId)
+	public function row($listing, $id, $relationEditor, $relationField, $relationId)
 	{
-		$query = $this->listSetDefinition($info, $listing, $relationResource, $relationField, $relationId);
+		$query = $this->listSetDefinition($info, $listing, $relationEditor, $relationField, $relationId);
 		if ($id) $record = $query->find($id);
 		else $record = null;
 		
@@ -42,7 +42,7 @@ class ResourceListCompiler
 			];
 		} else {
 			$data = [
-				'resource' => $this->resource,
+				'editor' => $this->editor,
 				'listing' => $listing,
 				'record' => $record,
 			];
@@ -59,20 +59,20 @@ class ResourceListCompiler
 		return $this->templateBase.'/'.preg_replace('/[^a-zA-Z0-9_-]/','',$listing).'-listing/'.$type;
 	}
 
-	public function resourceHome(Request $request)
+	public function editorHome(Request $request)
 	{
 		$this->addListSessionParameters($request);
 		$query = $this->listSetDefinition($info,'home');
-		$records = $query->paginate($this->resource->perPage);
+		$records = $query->paginate($this->editor->perPage);
 		$info['rld']['fragtype'] = 'table';
 		
 		$data = [
-			'resource'    => $this->resource,
+			'editor'    => $this->editor,
 			'records'     => $records,
 			'currentPage' => $records->currentPage(),
-			'perPage'     => $this->resource->perPage,
-			'first'       => ($records->currentPage() - 1) * $this->resource->perPage + 1,
-			'last'        => ($records->currentPage()) * $this->resource->perPage,
+			'perPage'     => $this->editor->perPage,
+			'first'       => ($records->currentPage() - 1) * $this->editor->perPage + 1,
+			'last'        => ($records->currentPage()) * $this->editor->perPage,
 			'found'       => $info['count'],
 			'total'       => $info['total'],
 			'sort'        => $info['sorted'],
@@ -84,34 +84,34 @@ class ResourceListCompiler
 		if ($data['last'] > $data['found']) $data['last'] = $data['found'];
 		$data['rld']['page'] = $records->currentPage();
 
-		return view('esterisk.backend.resource-home', $data);
+		return view('esterisk.backend.editor-home', $data);
 	}
 	
 	public function tableFromRequest(Request $request)
 	{
 		$listing  = isset($request->listing) ? $request->listing : 'home';
 		$page = isset($request->page) ? $request->page : null;
-		$relationResource = isset($request->relationResource) ? $request->relationResource : null;
+		$relationEditor = isset($request->relationEditor) ? $request->relationEditor : null;
 		$relationField = isset($request->relationField) ? $request->relationField : null;
 		$relationId = isset($request->relationId) ? $request->relationId : null;
 
-		return $this->table($listing, $page, $relationResource, $relationField, $relationId);
+		return $this->table($listing, $page, $relationEditor, $relationField, $relationId);
 	}
 	
-	public function table($listing, $page, $relationResource, $relationField, $relationId)
+	public function table($listing, $page, $relationEditor, $relationField, $relationId)
 	{
-		$query = $this->listSetDefinition($info, $listing, $relationResource, $relationField, $relationId);
+		$query = $this->listSetDefinition($info, $listing, $relationEditor, $relationField, $relationId);
 		$info['rld']['fragtype'] = 'table';
 
 		if ($page !== null) {
-			$records = $query->paginate($this->resource->perPage, ['*'], 'page', $page);
+			$records = $query->paginate($this->editor->perPage, ['*'], 'page', $page);
 			$data = [
-				'resource'    => $this->resource,
+				'editor'    => $this->editor,
 				'records'     => $records,
 				'currentPage' => $records->currentPage(),
-				'perPage'     => $this->resource->perPage,
-				'first'       => ($records->currentPage() - 1) * $this->resource->perPage + 1,
-				'last'        => ($records->currentPage()) * $this->resource->perPage,
+				'perPage'     => $this->editor->perPage,
+				'first'       => ($records->currentPage() - 1) * $this->editor->perPage + 1,
+				'last'        => ($records->currentPage()) * $this->editor->perPage,
 				'listing'     => $listing,
 				'rld'		  => $info['rld'],
 			];
@@ -119,7 +119,7 @@ class ResourceListCompiler
 		} else {
 			$records = $query->get();
 			$data = [
-				'resource'    => $this->resource,
+				'editor'    => $this->editor,
 				'records'     => $records,
 				'listing'     => $listing,
 				'rld'		  => $info['rld'],
@@ -131,9 +131,9 @@ class ResourceListCompiler
 		];			
 	}
 	
-	public function related($listing, $relationResource, $relationField, $relationId,$orderBy = null, $defaults = null)
+	public function related($listing, $relationEditor, $relationField, $relationId,$orderBy = null, $defaults = null)
 	{
-		$query = $this->listSetDefinition($info, $listing, $relationResource, $relationField, $relationId);
+		$query = $this->listSetDefinition($info, $listing, $relationEditor, $relationField, $relationId);
 		if ($orderBy) $query = $query->orderBy(trim($orderBy,'-+'),(substr($orderBy,0,1)== '-' ? 'desc':'asc'));
 		
 		$info['rld']['fragtype'] = 'table';
@@ -142,7 +142,7 @@ class ResourceListCompiler
 		if ($defaults) $defaultsQuery = '?'.http_build_query($defaults, '', '&amp;');
 		
 		$data = [
-			'resource'    => $this->resource,
+			'editor'    => $this->editor,
 			'records'     => $records,
 			'listing'     => $listing,
 			'rld'		  => $info['rld'],
@@ -155,45 +155,45 @@ class ResourceListCompiler
 		];			
 	}
 	
-	public function relatedTable($relationResource, $relationField, $relationId,$orderBy = null, $defaults = null)
+	public function relatedTable($relationEditor, $relationField, $relationId,$orderBy = null, $defaults = null)
 	{
-		return $this->related('related',$relationResource, $relationField, $relationId,$orderBy, $defaults);
+		return $this->related('related',$relationEditor, $relationField, $relationId,$orderBy, $defaults);
 	}
 	
 	/* List set definition */
 	
 	public function listSetDefinitionFromRequest(Request $request, &$info) {
 		$listing  = isset($request->listing) ? $request->listing : 'home';
-		$relationResource = isset($request->relationResource) ? $request->relationResource : null;
+		$relationEditor = isset($request->relationEditor) ? $request->relationEditor : null;
 		$relationField = isset($request->relationField) ? $request->relationField : null;
 		$relationId = isset($request->relationId) ? $request->relationId : null;
-		return $this->listSetDefinition($info, $listing, $relationResource, $relationField, $relationId);
+		return $this->listSetDefinition($info, $listing, $relationEditor, $relationField, $relationId);
 	}
 	
-	private function listSetDefinition(&$info, $listing, $relationResource = null, $relationField = null, $relationId = null)
+	private function listSetDefinition(&$info, $listing, $relationEditor = null, $relationField = null, $relationId = null)
 	{
 		$info = [ 'rld' => [ 
-			'res' => $this->resource->slug,
-			'rurl' => $this->resource->reloadRoute(), 
+			'res' => $this->editor->slug,
+			'rurl' => $this->editor->reloadRoute(), 
 			'lstg' => $listing, 
 		] ];
-		if ($relationResource) {
-			if (!($parentResource = $this->resource->otherResource($relationResource))) throw new \Exception('Parent resource not found');
-			if (!$parentModel = $parentResource->model) throw new \Exception('Parent model not found');
-			if (!$relationField || !($parentField = $parentResource->getRelationField($relationField))) throw new \Exception('Parent field not found');
-			if (!$relationName = $parentField->relationName) throw new \Exception('Relation not found');
+		if ($relationEditor) {
+			if (!($parentEditor = $this->editor->otherEditor($relationEditor))) throw new \Exception('Parent editor not found');
+			if (!$parentModel = $parentEditor->model) throw new \Exception('Parent model not found');
+			if (!$relationField || !($parentField = $parentEditor->getRelationField($relationField))) throw new \Exception('Parent field not found');
+			if (!($relationName = $parentField->relationName)) throw new \Exception('Relation '.$parentField->relationName.' not found');
 			if (!$relationId) throw new \Exception('Parent id not found');
 			if (!$parent = $parentModel->find($relationId))  throw new \Exception('Parent object not found');
 			$query = $parent->$relationName();
 			
 			$info['rld'] += [ 
-				'relrs' => $relationResource,
+				'relrs' => $relationEditor,
 				'relfd' => $relationField,
 				'relid' => $relationId,
 			];
 		}
 		else {
-			$query = $this->resource->model;
+			$query = $this->editor->model;
 		}
 		$info['total'] = $query->count();
 		
@@ -211,19 +211,19 @@ class ResourceListCompiler
 						foreach ($values as $value) {
 							$dir = substr($value,0,1) == '-' ? 'desc' : 'asc';
 							$key = trim($value, '-');
-							if ($key == 'id') $key = $this->resource->modelPrimaryKey;
+							if ($key == 'id') $key = $this->editor->modelPrimaryKey;
 							$query = $query->orderBy($key, $dir);
 							$info['sorted'] = $value; 
-							$info['filters'][] = [ 'icon' => $dir == 'asc' ? 'sort-down-icon' : 'sort-up-icon', 'label' => 'Ordinamento', 'key' => 'sort', 'description' => $this->resource->fieldLabel($key), 'value' => $value ];
+							$info['filters'][] = [ 'icon' => $dir == 'asc' ? 'sort-down-icon' : 'sort-up-icon', 'label' => 'Ordinamento', 'key' => 'sort', 'description' => $this->editor->fieldLabel($key), 'value' => $value ];
 						}
 						break;
 					
 					// ricerca
 					case 'search':
 						if ($values) {
-							if (!empty($listSession['searchIn']) && in_array($listSession['searchIn'], $this->resource->listFields)) $fields = [ $listSession['searchIn'] ];
-							else $fields = array_merge(['id'], $this->resource->listFields);
-							$pk = $this->resource->modelPrimaryKey;
+							if (!empty($listSession['searchIn']) && in_array($listSession['searchIn'], $this->editor->listFields)) $fields = [ $listSession['searchIn'] ];
+							else $fields = array_merge(['id'], $this->editor->listFields);
+							$pk = $this->editor->modelPrimaryKey;
 							$query = $query->where(function($query) use ($pk, $values, $fields) {
 								foreach ($fields as $field) {
 									if ($field == 'id') $query = $query->orWhere($pk, '=', intval($values));
@@ -239,15 +239,15 @@ class ResourceListCompiler
 					
 					// ricerca
 					case 'selection':
-						if ($values && ($closure = $this->resource->selections[$values]['query'])) {
+						if ($values && ($closure = $this->editor->selections[$values]['query'])) {
 							$query = $closure($query);						
-							$info['filters'][] = [ 'icon' => 'funnel-icon', 'label' => 'Selezione', 'key' => 'selection', 'description' => $this->resource->selections[$values]['label'], 'value' => $values ];
+							$info['filters'][] = [ 'icon' => 'funnel-icon', 'label' => 'Selezione', 'key' => 'selection', 'description' => $this->editor->selections[$values]['label'], 'value' => $values ];
 							$info['tools']['selection'] = $listSession['selection'];
 						}
 						break;
 				}
 			}
-			if (!$info['sorted']) $query = $query->orderBy($this->resource->modelPrimaryKey, 'desc');
+			if (!$info['sorted']) $query = $query->orderBy($this->editor->modelPrimaryKey, 'desc');
 		}
 		$info['count'] = $query->count();
 		return $query;
@@ -264,7 +264,7 @@ class ResourceListCompiler
 	
 	private function listSessionName()
 	{
-		return 'backendList'.$this->resource->slug;
+		return 'backendList'.$this->editor->slug;
 	}
 	
 	private function getListSession()
@@ -280,7 +280,7 @@ class ResourceListCompiler
 	private function updateListSession($addToSession = [])
 	{
 		$listSession = $this->getListSession();
-		foreach ($addToSession as $key => $value) if (in_array(trim($key, '+-!'), $this->resource->listQueryParameters)) {
+		foreach ($addToSession as $key => $value) if (in_array(trim($key, '+-!'), $this->editor->listQueryParameters)) {
 			$sub = substr($key,0,1) == '-';
 			$set = substr($key,0,1) == '!';
 			$add = substr($key,0,1) == '+';

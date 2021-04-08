@@ -21,7 +21,7 @@ class DeleteCommand extends Command
 	         	'event' => $this->deletedEvent($id),
 		    ]);
 		} else {
-		    return $this->error(ucfirst($this->resource->singular()).' '.$id.' non trovato');
+		    return $this->error(ucfirst($this->editor->singular()).' '.$id.' non trovato');
 		}
 	}
 		
@@ -29,7 +29,7 @@ class DeleteCommand extends Command
 	
 	public function destroyModel($id)
 	{
-		$this->resource->record->delete();
+		$this->editor->record->delete();
 		return true;
 	}
 

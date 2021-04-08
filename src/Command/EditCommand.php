@@ -15,12 +15,15 @@ class EditCommand extends Command
 
 	public function execute($id = null, Request $request)
 	{
-		$this->resource->form->options([ 'defaults' => $this->resource->record, 'action' => $this->resource->commandRoute('save', $id) ]);
-
+		$this->editor->form->options([ 'defaults' => $this->editor->record, 'action' => $this->editor->commandRoute('save', $id) ]);
+		foreach ($this->editor->form->relations as $relation) {
+			$this->editor->form->setRelationDefaults($relation, $this->editor->getRelationDefaults($relation));
+		}
+		
 		$data = [
 			'_id' => $id,
-			'resource' => $this->resource,
-			'form' => $this->resource->form,
+			'editor' => $this->editor,
+			'form' => $this->editor->form,
 			'panelid' => uniqid('panel'),
 			'subtitle' => 'Modifica',
 		];

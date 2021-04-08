@@ -1,2 +1,2 @@
 @include('esterisk/backend/related-listing/table')
-<p style="margin-top:10px;"><a class="btn btn-outline-secondary float-right" data-command-title="Aggiungi" data-command-url="{{ $resource->commandRoute('new') }}{{ $defaults }}" data-command-method="get">Aggiungi</a></p>
+<p style="margin-top:10px;"><a class="btn btn-outline-secondary float-right" data-command-title="Aggiungi" data-command-url="{{ $editor->commandRoute('new') }}{{ $defaults }}" data-command-method="get">Aggiungi</a></p>

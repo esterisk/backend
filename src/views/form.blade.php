@@ -1,4 +1,4 @@
-@extends($resource->viewLayout)
+@extends($editor->viewLayout)
 
 @section('content')
 

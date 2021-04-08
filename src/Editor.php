@@ -5,11 +5,11 @@ use Illuminate\Http\Request;
 use Validator;
 use Esterisk\Form\Form;
 
-class Resource
+class Editor
 {
 	var $commands;
 	var $commandsMenu;
-	var $resourceCommandsMenu;
+	var $editorCommandsMenu;
 	var $itemName = [ 'elemento', 'elementi' ];
 	var $backendTitle = null;
 	var $modelClass;
@@ -29,7 +29,7 @@ class Resource
 	var $defaultCommands = [ 'list', 'edit', 'duplicate', 'delete', 'save', 'new' ];
 	var $relatedCommands = [ 'edit', 'detach' ];
 	var $scriptLibs = [];
-	var $listCompilerClass = \Esterisk\Backend\ListCompiler\ResourceListCompiler::class;
+	var $listCompilerClass = \Esterisk\Backend\ListCompiler\EditorListCompiler::class;
 	var $listCompiler = null;
 
 	public function __construct($backend, $slug)
@@ -53,7 +53,7 @@ class Resource
 	public function createForm()
 	{
 		$this->form = new Form();
-		$this->form->resource($this);
+		$this->form->editor($this);
 		$this->form->action($this->commandRoute('save'))
 			->method('post')
 			->addFields([
@@ -77,9 +77,9 @@ class Resource
 		}
 	}
 	
-	public function otherResource($slug)
+	public function otherEditor($slug)
 	{
-		return $this->backend->resource($slug);
+		return $this->backend->editor($slug);
 	}
 	
 	/* COMMANDS */
@@ -95,7 +95,7 @@ class Resource
 		foreach ($commands as $handler) {
 			$this->commands[$handler->slug] = $handler;
 			if ($handler->show && $handler->target == 'record') $this->commandsMenu[]= $handler->slug;
-			if ($handler->show && $handler->target == 'resource') $this->resourceCommandsMenu[]= $handler->slug;
+			if ($handler->show && $handler->target == 'editor') $this->editorCommandsMenu[]= $handler->slug;
 		}
 	}
 
@@ -158,10 +158,10 @@ class Resource
 		return $menu;
 	}
 	
-	public function resourceCommandMenu()
+	public function editorCommandMenu()
 	{
 		$menu = [];
-		if (count($this->resourceCommandsMenu)) foreach ($this->resourceCommandsMenu as $slug) {
+		if (count($this->editorCommandsMenu)) foreach ($this->editorCommandsMenu as $slug) {
 			$link = $this->commandInfo($slug);
 			$menu[$link['url']] = $link;
 		}
@@ -201,16 +201,16 @@ class Resource
 		return $this->listCompiler;
 	}
 	
-	/* called from the parent resource */
-	public function relatedList($relationResource, $relationField, $relationId,$orderBy = null, $defaults = null)
+	/* called from the parent editor */
+	public function relatedList($relationEditor, $relationField, $relationId,$orderBy = null, $defaults = null)
 	{
-		return $this->otherResource($relationResource)->childList($this->slug, $relationField, $relationId,$orderBy, $defaults);
+		return $this->otherEditor($relationEditor)->childList($this->slug, $relationField, $relationId,$orderBy, $defaults);
 	}
 	
-	/* called from the related resorce */
-	public function childList($parentResource, $relationField, $relationId,$orderBy = null, $defaults = null)
+	/* called from the related editor */
+	public function childList($parentEditor, $relationField, $relationId,$orderBy = null, $defaults = null)
 	{
-		return $this->listCompiler()->relatedTable($parentResource, $relationField, $relationId, $orderBy, $defaults);
+		return $this->listCompiler()->relatedTable($parentEditor, $relationField, $relationId, $orderBy, $defaults);
 	}
 
 	public function pageTitle()
@@ -242,7 +242,7 @@ class Resource
 	
 	public function listRoute($addToSession = null)
 	{
-		return $this->backend->resourceRoute($this->slug, $addToSession);
+		return $this->backend->editorRoute($this->slug, $addToSession);
 	}
 	
 	public function listRowRoute($id, $listing = null)
@@ -308,6 +308,10 @@ class Resource
 			$field->record($record);
 			return $field->show($record->$key);
 		}
+	}
+	
+	public function getRelationDefaults($relationName)
+	{
 	}
 	
 	public function spotlight($record)

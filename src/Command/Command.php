@@ -8,7 +8,7 @@ class Command
 {
 	var $label;
 	var $slug;
-	var $resource;
+	var $editor;
 	var $method = 'get';
 	var $show = true;
 	var $target = 'record';
@@ -17,11 +17,11 @@ class Command
 	var $template = null;
 	var $icon = null;
 
-	public function __construct($slug, $resource)
+	public function __construct($slug, $editor)
 	{
 		$this->slug = $slug;
-		$this->resource = $resource;
-		$this->label = str_replace('%s', $this->resource->singular(), str_replace('%p', $this->resource->plural(), $this->label));
+		$this->editor = $editor;
+		$this->label = str_replace('%s', $this->editor->singular(), str_replace('%p', $this->editor->plural(), $this->label));
 		$this->init();
 	}
 	
@@ -55,7 +55,7 @@ class Command
 
 	public function back($status, $message, $info = null)
 	{
-		return $this->resource->back($status, $message, $info);
+		return $this->editor->back($status, $message, $info);
 	}
 	
 	public function error($message, $info = null)
@@ -75,13 +75,13 @@ class Command
 
 	public function route($id = null)
 	{
-		return $this->resource->commandRoute($this->slug, $id);
+		return $this->editor->commandRoute($this->slug, $id);
 	}
 	
 	public function view($view, $data)
 	{
 		if (request()->wantsJson() || request()->has('json')) {
-			$data['layout'] = $this->resource->panelLayout;
+			$data['layout'] = $this->editor->panelLayout;
 			$data['json'] = true;
 			$result = [ 
 				'template' => $this->template, 
@@ -92,7 +92,7 @@ class Command
 			];
 			return response()->json($result);
 		} else {
-			$data['layout'] = $this->resource->viewLayout;
+			$data['layout'] = $this->editor->viewLayout;
 			$data['json'] = true;
 			return view($view, $data);
 		}
@@ -102,7 +102,7 @@ class Command
 	
 	public function backendEvent($event, $id, $data = [])
 	{
-		return array_merge($data, [ 'event' => $event, 'resource' => $this->resource->slug, 'id' => $id ]);
+		return array_merge($data, [ 'event' => $event, 'editor' => $this->editor->slug, 'id' => $id ]);
 	}
 	
 	public function modifiedEvent($id)

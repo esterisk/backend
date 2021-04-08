@@ -14,8 +14,8 @@ class SaveCommand extends Command
 	public function execute($id = null, Request $request)
 	{
 		$this->request = $request;
-    	$this->resource->form->validate($request);
-    	$data = $this->resource->form->salvable($request, $this->resource->record);
+    	$this->editor->form->validate($request);
+    	$data = $this->editor->form->salvable($request, $this->editor->record);
     	
     	if ($data['_id']) {
     		$record = $this->saveModel($data['_id'], $data);
@@ -24,14 +24,16 @@ class SaveCommand extends Command
     		$record = $this->storeModel($data);
     		$event = $this->insertedEvent($record->getKey());
     	}
+    	
+    	if ($this->editor->form->relations) foreach ($this->editor->form->relations as $relationName) $this->editor->saveRelation($relationName);
      	$this->afterSave($request, $record);
    	
-    	$idfield = $this->resource->getField('_id')->render($id, $record);
+    	$idfield = $this->editor->getField('_id')->render($id, $record);
     	
-        return $this->success(ucfirst($this->resource->singular()).' '.$id.($this->resource->modelTitleField && !empty($data[$this->resource->modelTitleField]) ? ' «'.$data[$this->resource->modelTitleField].'»' : '').' salvato.', [
+        return $this->success(ucfirst($this->editor->singular()).' '.$id.($this->editor->modelTitleField && !empty($data[$this->editor->modelTitleField]) ? ' «'.$data[$this->editor->modelTitleField].'»' : '').' salvato.', [
         	'id-field' => $idfield,
-        	'reloaded-fields' => $this->resource->form->reloadFields($record),
-        	'resource' => $this->resource->slug,
+        	'reloaded-fields' => $this->editor->form->reloadFields($record),
+        	'editor' => $this->editor->slug,
         	'event' => $event,
         	'_id' => $id 
         ]);
@@ -42,7 +44,7 @@ class SaveCommand extends Command
 	public function saveModel($id, $data)
 	{
 		unset($data['_id']);
-		$record = $this->resource->model->find($id);
+		$record = $this->editor->model->find($id);
 		foreach ($data as $key => $value) $record->$key = $value;
 		$record->save();
 		return $record;
@@ -51,7 +53,7 @@ class SaveCommand extends Command
 	public function storeModel($data)
 	{
 		unset($data['_id']);
-		$record = new $this->resource->model;
+		$record = new $this->editor->model;
 		foreach ($data as $key => $value) $record->$key = $value;
 		$record->save();
 		return $record;
@@ -59,7 +61,7 @@ class SaveCommand extends Command
 	
 	public function afterSave($request, $record)
 	{
-		$updates = $this->resource->form->afterSave($request, $record);
+		$updates = $this->editor->form->afterSave($request, $record);
 		if ($updates) {
 			foreach ($updates as $key => $value) $record->$key = $value;
 		}

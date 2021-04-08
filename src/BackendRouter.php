@@ -39,27 +39,27 @@ class BackendRouter
 				->where('backend', implode('|',$group))
 				->name('esterisk.backend.index');
 
-		Route::any('/{resource}/lookup/{field}',
+		Route::any('/{editor}/lookup/{field}',
 			'Esterisk\Backend\Http\Controllers\BackendController@lookupRouter')
 				->where('backend', implode('|',$group))
 				->name('esterisk.backend.lookup');
 
-		Route::any('/{resource}/ajax/rld',
+		Route::any('/{editor}/ajax/rld',
 			'Esterisk\Backend\Http\Controllers\BackendController@reloadRouter')
 				->where('backend', implode('|',$group))
 				->name('esterisk.backend.reload');
 
-		Route::post('/{resource}/ajax/{cmd}/{id?}',
+		Route::post('/{editor}/ajax/{cmd}/{id?}',
 			'Esterisk\Backend\Http\Controllers\BackendController@ajaxRouter')
 				->where('backend', implode('|',$group))
 				->name('esterisk.backend.ajax');
 
-		Route::get('/{resource}/{cmd?}/{id?}/{other?}',
+		Route::get('/{editor}/{cmd?}/{id?}/{other?}',
 			'Esterisk\Backend\Http\Controllers\BackendController@getRouter')
 				->where('backend', implode('|',$group))
 				->name('esterisk.backend.get');
 
-		Route::post('/{resource}/{cmd}/{id?}',
+		Route::post('/{editor}/{cmd}/{id?}',
 			'Esterisk\Backend\Http\Controllers\BackendController@postRouter')
 				->where('backend', implode('|',$group))
 				->name('esterisk.backend.post');

@@ -36,11 +36,11 @@ class BackendController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function getRouter(Request $request, $backend, $resource, $command = 'list', $id = null)
+    public function getRouter(Request $request, $backend, $editor, $command = 'list', $id = null)
     {
     	$backend = $this->backend($backend);
 //    	try {
-	    	return $backend->execute($resource, $command, $id, $request);
+	    	return $backend->execute($editor, $command, $id, $request);
 //	    } catch (\Exception $e) {
 //	    	abort(404);
 //	    }
@@ -51,12 +51,12 @@ class BackendController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function postRouter(Request $request, $backend, $resource, $command, $id = null)
+    public function postRouter(Request $request, $backend, $editor, $command, $id = null)
     {
     		$backend = $this->backend($backend);
 
 //    		try {
-	    		return $backend->execute($resource, $command, $id, $request);
+	    		return $backend->execute($editor, $command, $id, $request);
 //	    	} catch (\Exception $e) {
 //	    		abort(404);
 //	    	}
@@ -67,10 +67,10 @@ class BackendController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function ajaxRouter(Request $request, $backend, $resource, $command, $id = null)
+    public function ajaxRouter(Request $request, $backend, $editor, $command, $id = null)
     {
     		$set = trim($request->route()->getCompiled()->getStaticPrefix(), '/');
-    		$backend = $this->getClass($resource,$set) or abort(404);
+    		$backend = $this->getClass($editor,$set) or abort(404);
     		try {
 	    		return $backend->execute($command, $id, $request);
 	    	} catch (\Exception $e) {
@@ -83,11 +83,11 @@ class BackendController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function reloadRouter(Request $request, $backend, $resource)
+    public function reloadRouter(Request $request, $backend, $editor)
     {
     	$backend = $this->backend($backend);
 //    	try {
-	    	return $backend->reload($resource, $request);
+	    	return $backend->reload($editor, $request);
 //	    } catch (\Exception $e) {
 //	    	abort(404);
 //	    }
@@ -98,11 +98,11 @@ class BackendController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function lookupRouter(Request $request, $backend, $resource, $field)
+    public function lookupRouter(Request $request, $backend, $editor, $field)
     {
     	$backend = $this->backend($backend);
 //    	try {
-	    	return $backend->lookup($resource, $field, $request);
+	    	return $backend->lookup($editor, $field, $request);
 //	    } catch (\Exception $e) {
 //	    	abort(404);
 //	    }

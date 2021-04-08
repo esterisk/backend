@@ -21,24 +21,24 @@ class ArticleStatusCommand extends Command
 		$fieldName = $this->field;
 		if (!$fieldName) return $this->error('Campo errato');
 		if (!$request->has($fieldName) || !($status = $request->$fieldName)) return $this->error('Valore non indicato');
-		$field = $this->resource->getField($fieldName);
+		$field = $this->editor->getField($fieldName);
 		if (empty($field->statuses)) return $this->error('Campo errato');
 		if (empty($field->statuses[$status])) return $this->error('Stato non previsto');
 		
-		$this->resource->record->$fieldName = $field->prepareForSave($status);
+		$this->editor->record->$fieldName = $field->prepareForSave($status);
 		if ($status == 'published') {
-			if ($updateTime = $this->updateTime) $this->resource->record->$updateTime = date('Y-d-m H:i:s');
+			if ($updateTime = $this->updateTime) $this->editor->record->$updateTime = date('Y-d-m H:i:s');
 			if ($updateDate = $this->updateDate) {
 				switch ($this->updateWhen) {
 					case 'tomorrow': $date = strtotime('+1 day'); break;
 					case 'today': default: $date = time(); break;
 				}
-				$this->resource->record->$updateDate = date('Y-m-d', $date);
+				$this->editor->record->$updateDate = date('Y-m-d', $date);
 			}
 		}
-		$this->resource->record->save();
+		$this->editor->record->save();
 		
-		return $this->success($this->resource->singular().' '.$id.' impostato su '.$field->labels[$status], [
+		return $this->success($this->editor->singular().' '.$id.' impostato su '.$field->labels[$status], [
          	'event' => $this->modifiedEvent($id),
         	'_id' => $id 
         ]);

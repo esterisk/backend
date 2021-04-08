@@ -13,14 +13,14 @@ class DuplicateCommand extends Command
 
 	public function execute($id = null, Request $request)
 	{
-		$record = $this->resource->record->replicate();
-		$this->resource->form->fieldList['_id']->sourceId($id);
-		$this->resource->form->options([ 'defaults' => $record, 'action' => $this->resource->commandRoute('save', $id), 'submit' => 'Inserisci' ]);
+		$record = $this->editor->record->replicate();
+		$this->editor->form->fieldList['_id']->sourceId($id);
+		$this->editor->form->options([ 'defaults' => $record, 'action' => $this->editor->commandRoute('save', $id), 'submit' => 'Inserisci' ]);
 
 		$data = [
 			'_id' => $id,
-			'resource' => $this->resource,
-			'form' => $this->resource->form,
+			'editor' => $this->editor,
+			'form' => $this->editor->form,
 			'panelid' => uniqid('panel'),
 			'subtitle' => 'Nuovo',
 		];
